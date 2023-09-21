@@ -1,8 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toggleMenu } from "../utils/appSlice";
+import { YOUTUBE_SEARCH_API } from "../utils/constant";
 
 const Head = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsVisibility, setSuggestionsVisibility] = useState(false);
+
+  useEffect(
+    () => {
+      //API call
+
+      // Performing Debouncing
+
+      /** Setup of debouncing
+       * make an api call on every key press
+       * but if the difference b/w 2 API calls is (less than) < 200ms -> Decline the API calls.
+       * Make API calls whnen timer expire
+       */
+
+      const timer = setTimeout(() => getSearchSuggestions(), 200);
+
+      // We performing unmounting using return in useEffect
+      // We do unmounting , because we want to destroy the prevoius timer,  because it is calling unneccesary
+      return () => {
+        clearTimeout(timer);
+      };
+    }, // eslint-disable-next-line
+    [searchQuery]
+  );
+
+  const getSearchSuggestions = async () => {
+    const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
+    const searchOutput = await data.json();
+    //console.log(searchOutput[0]);
+    console.log(searchOutput[1]);
+    setSuggestions(searchOutput[1]);
+  };
+
   const dispatch = useDispatch();
   const toggleMenuHandler = () => {
     dispatch(toggleMenu()); // We did not pass anything inside toggleMenu() because there is no payload in toggleMenu Action function in appSlice.
@@ -18,19 +54,41 @@ const Head = () => {
         />
 
         <img
-          className="h-8 mx-2"
+          className="h-6 mx-2"
           alt="youtube-logo"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_of_YouTube_%282015-2017%29.svg/753px-Logo_of_YouTube_%282015-2017%29.svg.png"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/YouTube_Logo_2017.svg/508px-YouTube_Logo_2017.svg.png"
         />
       </div>
       <div className="col-span-10 px-10">
-        <input
-          className="w-1/2 border border-gray-400 p-2 rounded-l-full"
-          type="text"
-        ></input>
-        <button className="border border-gray-400 px-5 py-2 rounded-r-full bg-gray-100">
-          🔍
-        </button>
+        <div>
+          <input
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            className="px-5 w-1/2 border border-gray-400 p-2 rounded-l-full"
+            type="text"
+            onFocus={() => setSuggestionsVisibility(true)}
+            onBlur={() => setSuggestionsVisibility(false)}
+          ></input>
+          <button className="border border-gray-400 px-5 py-2 rounded-r-full bg-gray-100">
+            🔍
+          </button>
+        </div>
+        {suggestionsVisibility && suggestions.length > 0 ? (
+          <div className="fixed bg-white py-2 px-2 w-[26.5rem] shadow-lg rounded-lg border border-gray-100">
+            <ul>
+              {suggestions.map((item, index) => (
+                <li
+                  key={index}
+                  className=" py-2 px-3 shadow-sm hover:bg-gray-100"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
       <div className="col-span-1">
         <img
