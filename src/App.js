@@ -4,23 +4,34 @@ import Head from "./components/Head";
 import { Provider } from "react-redux";
 import store from "./utils/store";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import MainContainer from "./components/MainContainer";
+import WatchPage from "./components/WatchPage";
 
+// createBrowserRouter -> always keep out from component block
+const appRouter = createBrowserRouter([
+  {
+    path: "/",
+    element: <Body />,
+    children: [
+      // All children goes where ,<Outlet/> is define.
+      {
+        path: "/",
+        element: <MainContainer />,
+      },
+      {
+        path: "/watch",
+        element: <WatchPage />,
+      },
+    ],
+  },
+]);
 function App() {
-  const appRouter = createBrowserRouter([
-    {
-      path: "/",
-      element: <Head />,
-      children: [
-        {
-          path: "/",
-          element: <Body />,
-        },
-      ],
-    },
-  ]);
   return (
     <Provider store={store}>
-      <RouterProvider router={appRouter} />
+      <div>
+        <Head />
+        <RouterProvider router={appRouter} />
+      </div>
     </Provider>
   );
 }

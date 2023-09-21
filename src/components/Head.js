@@ -15,12 +15,13 @@ const Head = () => {
           className="h-8 cursor-pointer"
           alt="menu"
           src="https://static.vecteezy.com/system/resources/previews/021/190/402/original/hamburger-menu-filled-icon-in-transparent-background-basic-app-and-web-ui-bold-line-icon-eps10-free-vector.jpg"
-        ></img>
+        />
+
         <img
           className="h-8 mx-2"
           alt="youtube-logo"
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_of_YouTube_%282015-2017%29.svg/753px-Logo_of_YouTube_%282015-2017%29.svg.png"
-        ></img>
+        />
       </div>
       <div className="col-span-10 px-10">
         <input
