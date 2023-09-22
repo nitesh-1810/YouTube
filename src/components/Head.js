@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleMenu } from "../utils/appSlice";
 import { YOUTUBE_SEARCH_API } from "../utils/constant";
+import { cacheResults } from "../utils/searchSlice";
 
 const Head = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionsVisibility, setSuggestionsVisibility] = useState(false);
+
+  const searchCache = useSelector((store) => store.search);
+  const dispatch = useDispatch();
 
   useEffect(
     () => {
@@ -20,7 +24,10 @@ const Head = () => {
        * Make API calls whnen timer expire
        */
 
-      const timer = setTimeout(() => getSearchSuggestions(), 200);
+      const timer = setTimeout(() => {
+        if (searchCache[searchQuery]) setSuggestions(searchCache[searchQuery]);
+        else getSearchSuggestions();
+      }, 200);
 
       // We performing unmounting using return in useEffect
       // We do unmounting , because we want to destroy the prevoius timer,  because it is calling unneccesary
@@ -37,9 +44,15 @@ const Head = () => {
     //console.log(searchOutput[0]);
     console.log(searchOutput[1]);
     setSuggestions(searchOutput[1]);
+
+    // caching using store
+    dispatch(
+      cacheResults({
+        [searchQuery]: searchOutput[1],
+      })
+    );
   };
 
-  const dispatch = useDispatch();
   const toggleMenuHandler = () => {
     dispatch(toggleMenu()); // We did not pass anything inside toggleMenu() because there is no payload in toggleMenu Action function in appSlice.
   };
