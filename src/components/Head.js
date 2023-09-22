@@ -42,7 +42,7 @@ const Head = () => {
     const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
     const searchOutput = await data.json();
     //console.log(searchOutput[0]);
-    console.log(searchOutput[1]);
+    //console.log(searchOutput[1]);
     setSuggestions(searchOutput[1]);
 
     // caching using store

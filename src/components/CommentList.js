@@ -8,7 +8,7 @@ const CommentList = ({ comment }) => {
       {comment.reply.length > 0 && (
         <div className="px-5 border border-l-black ml-5">
           {/* {recursion in component} */}
-          {console.log(comment.reply.length)}
+          {/*console.log(comment.reply.length)*/}
 
           <CommentList comment={comment.reply} />
         </div>
